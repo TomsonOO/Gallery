@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: db_cats
+    image: mysql:5.7
+    restart: always
+    env_file: backend/.env
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  app:
+    container_name: app_cats
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    working_dir: /var/www/backend
+    environment:
+      - APP_ENV=dev
+    depends_on:
+      - db
+
+  client:
+    container_name: client_cats
+    build:
+      context: ./client
+      dockerfile: Dockerfile.node
+    volumes:
+      - ./client:/app
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - db
+
+volumes:
+  my-db:
