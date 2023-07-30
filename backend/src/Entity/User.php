@@ -33,6 +33,21 @@ class User implements UserInterface
      */
     private $password;
 
+    public function getRoles(): array
+    {
+        // TODO: Return an array of roles for the user
+    }
+
+    public function eraseCredentials(): void
+    {
+        // TODO: Remove sensitive data from the user's credentials
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // TODO: Return the identifier for the user (usually the username)
+    }
+
     // TODO: Add email field
 
     // TODO: Add image relationship

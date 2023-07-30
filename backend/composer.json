@@ -7,6 +7,7 @@
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "aws/aws-sdk-php": "^3.277",
         "doctrine/annotations": "^2.0",
         "doctrine/doctrine-migrations-bundle": "*",
         "doctrine/orm": "*",
@@ -15,6 +16,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.0.*",
         "symfony/runtime": "6.0.*",
+        "symfony/security-bundle": "6.0.*",
         "symfony/yaml": "6.0.*"
     },
     "require-dev": {

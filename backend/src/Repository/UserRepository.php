@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,6 +21,20 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     {
         parent::__construct($registry, User::class);
     }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function loadUserByIdentifier(string $identifier): ?UserInterface
+    {
+        // Load a user by their username or email
+        return $this->createQueryBuilder('u')
+            ->where('u.username = :identifier OR u.email = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
     public function loadUserByUsername($usernameOrEmail)
     {

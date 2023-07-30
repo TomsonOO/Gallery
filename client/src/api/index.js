@@ -1,13 +1,12 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000', // TODO: Replace with your backend URL
-    withCredentials: false,
+    baseURL: 'http://localhost:8000', // Replace with your backend URL
     headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json'
     }
-})
+});
 
 export default {
     getImages() {

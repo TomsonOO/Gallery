@@ -15,7 +15,7 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}", methods={"GET"})
      */
-    public function getUser(User $user): Response
+    public function getUserById(User $user): Response
     {
         // TODO: Return user as JSON
     }
