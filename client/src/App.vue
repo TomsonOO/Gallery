@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <CatList />
-    <AddCatForm />
+    <router-view/>
   </div>
 </template>
 
 <script>
-import CatList from './components/CatList.vue';
-import AddCatForm from './components/AddCatForm.vue';
-
 export default {
-  name: 'App',
-  components: {
-    CatList,
-    AddCatForm
-  }
+  name: 'App'
 }
 </script>
+
+<style>
+#app {
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
