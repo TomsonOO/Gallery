@@ -5,3 +5,6 @@
 ###< symfony/phpunit-bridge ###
 
 backend/.env
+client/node_modules
+client/dist
+backend/vendor

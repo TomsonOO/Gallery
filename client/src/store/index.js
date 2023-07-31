@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import AuthService from '../services/AuthService'
+import ImageService from '../services/ImageService'
 
 Vue.use(Vuex)
 
@@ -17,17 +19,21 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        fetchImages({ commit }) {
-            // TODO: Make API call to fetch images and commit the result
+        async fetchImages({ commit }) {
+            const response = await ImageService.getAll()
+            commit('setImages', response.data)
         },
-        uploadImage({ commit }, image) {
-            // TODO: Make API call to upload image and commit the result
+        async uploadImage({ commit }, image) {
+            const response = await ImageService.upload(image)
+            commit('setImages', [...this.state.images, response.data])
         },
-        login({ commit }, credentials) {
-            // TODO: Make API call to authenticate user and commit the result
+        async login({ commit }, credentials) {
+            const response = await AuthService.login(credentials)
+            commit('setUser', response.data)
         },
-        register({ commit }, user) {
-            // TODO: Make API call to create user and commit the result
+        async register({ commit }, user) {
+            const response = await AuthService.register(user)
+            commit('setUser', response.data)
         }
     },
     modules: {}
