@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Image;
 use App\Repository\ImageRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,12 @@ use Aws\S3\Exception\S3Exception;
 class ImageController extends AbstractController
 {
     private $s3;
+    private $em;
 
-    public function __construct(S3Client $s3)
+    public function __construct(S3Client $s3, EntityManagerInterface $em)
     {
         $this->s3 = $s3;
+        $this->em = $em;
     }
 
     /**
@@ -39,6 +42,7 @@ class ImageController extends AbstractController
         // TODO: Return image as JSON
     }
 
+
     /**
      * @Route("/images", methods={"POST"})
      */
@@ -48,26 +52,32 @@ class ImageController extends AbstractController
 
         /** @var UploadedFile $file */
         $file = $request->files->get('file');
-        $filename = md5(uniqid()).'.'.$file->guessExtension();
+
+        if (!$file) {
+            return new Response('No file was uploaded.', Response::HTTP_BAD_REQUEST);
+        }
+
+        $originalFilename = $file->getClientOriginalName();
+        $newFilename = md5(uniqid()) . '.' . $file->guessExtension();
 
         try {
-            $result = $this->s3->putObject([
+            $this->s3->putObject([
                 'Bucket' => 'gallery-bazunia',
-                'Key'    => $filename,
+                'Key'    => $newFilename,
                 'Body'   => fopen($file->getPathname(), 'rb'),
-                'ACL'    => 'public-read',
             ]);
 
-            $image->setUrl($result['ObjectURL']);
-            $image->setName($filename);
+            $image->setUrl('https://gallery-bazunia.s3.eu-west-1.amazonaws.com/' . $newFilename);
+            $image->setTitle($newFilename);
+            $image->setDescription('Default description');
+            $image->setFilename($originalFilename); // Set the original filename
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($image);
-            $em->flush();
+            $this->em->persist($image);
+            $this->em->flush();
 
             return new Response('Image uploaded successfully', Response::HTTP_OK);
         } catch (S3Exception $e) {
-            return new Response('There was an error uploading the file.', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new Response('There was an error uploading the file to S3: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
