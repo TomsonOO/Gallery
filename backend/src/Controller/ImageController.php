@@ -8,9 +8,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception;
 
 class ImageController extends AbstractController
 {
+    private $s3;
+
+    public function __construct(S3Client $s3)
+    {
+        $this->s3 = $s3;
+    }
+
     /**
      * @Route("/images", methods={"GET"})
      */
@@ -34,7 +44,31 @@ class ImageController extends AbstractController
      */
     public function createImage(Request $request): Response
     {
-        // TODO: Create image from request data and save to database
+        $image = new Image();
+
+        /** @var UploadedFile $file */
+        $file = $request->files->get('file');
+        $filename = md5(uniqid()).'.'.$file->guessExtension();
+
+        try {
+            $result = $this->s3->putObject([
+                'Bucket' => 'gallery-bazunia',
+                'Key'    => $filename,
+                'Body'   => fopen($file->getPathname(), 'rb'),
+                'ACL'    => 'public-read',
+            ]);
+
+            $image->setUrl($result['ObjectURL']);
+            $image->setName($filename);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($image);
+            $em->flush();
+
+            return new Response('Image uploaded successfully', Response::HTTP_OK);
+        } catch (S3Exception $e) {
+            return new Response('There was an error uploading the file.', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

@@ -59,6 +59,23 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/var-dumper" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/var-exporter" />
       <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/aws/aws-crt-php" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/aws/aws-sdk-php" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/guzzlehttp/promises" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/guzzlehttp/psr7" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/mtdowling/jmespath.php" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-client" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-factory" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/psr/http-message" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/ralouphie/getallheaders" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/password-hasher" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/property-access" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/property-info" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-bundle" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-core" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-csrf" />
+      <excludeFolder url="file://$MODULE_DIR$/backend/vendor/symfony/security-http" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

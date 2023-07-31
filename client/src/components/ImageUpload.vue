@@ -1,46 +1,33 @@
 <template>
-  <div class="image-upload">
-    <form @submit.prevent="uploadImage">
+  <div>
+    <h1>Upload Image</h1>
+    <form @submit.prevent="onSubmit">
       <input type="file" @change="onFileChange">
-      <input type="text" v-model="title" placeholder="Title">
-      <textarea v-model="description" placeholder="Description"></textarea>
-      <button type="submit">Upload</button>
+      <button type="submit">Submit</button>
     </form>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import axios from 'axios';
 
 export default {
-  name: 'ImageUpload',
   data() {
     return {
-      file: null,
-      title: '',
-      description: ''
+      selectedFile: null
     }
   },
   methods: {
-    ...mapActions(['uploadImage']),
     onFileChange(e) {
-      this.file = e.target.files[0]
+      this.selectedFile = e.target.files[0];
     },
-    uploadImage() {
-      const formData = new FormData()
-      formData.append('file', this.file)
-      formData.append('title', this.title)
-      formData.append('description', this.description)
-      this.uploadImage(formData)
+    onSubmit() {
+      let formData = new FormData();
+      formData.append('image', this.selectedFile, this.selectedFile.name);
+      axios.post('http://localhost:8000/api/upload', formData)
+          .then(res => console.log(res))
+          .catch(err => console.log(err));
     }
   }
 }
 </script>
-
-<style scoped>
-.image-upload form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-</style>
