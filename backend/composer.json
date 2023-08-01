@@ -11,6 +11,7 @@
         "doctrine/annotations": "^2.0",
         "doctrine/doctrine-migrations-bundle": "*",
         "doctrine/orm": "*",
+        "nelmio/cors-bundle": "^2.3",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
         "symfony/flex": "^2",

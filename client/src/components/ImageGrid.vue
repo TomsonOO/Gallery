@@ -11,18 +11,25 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
+import ImageService from '@/services/ImageService'
+
 export default {
-  name: 'ImageGrid',
-  computed: {
-    ...mapState(['images'])
+  data() {
+    return {
+      images: []
+    }
   },
   created() {
-    this.fetchImages()
-  },
-  methods: {
-    ...mapActions(['fetchImages'])
+    ImageService.getImages()
+        .then(response => {
+          this.images = response.data
+        })
+        .catch(error => {
+          console.error(error)
+        })
   }
 }
+
 </script>
 
 <style scoped>
