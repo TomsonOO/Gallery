@@ -26,47 +26,7 @@ class ImageController extends AbstractController
         $this->em = $em;
     }
 
-
-    /**
-     * @Route("/signed-url/{key}", name="signed_url")
-     */
-    public function signedUrl(string $key)
-    {
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__.'/../../.env');
-
-        $awsAccessKeyId = $_ENV['AWS_ACCESS_KEY_ID'];
-        $awsSecretAccessKey = $_ENV['AWS_SECRET_ACCESS_KEY'];
-
-//        dump($awsAccessKeyId, $awsSecretAccessKey);
-//        dd($awsAccessKeyId);
-//        var_dump($key);
-
-        $s3Client = new S3Client([
-            'version' => 'latest',
-            'region'  => 'eu-west-1', // Replace with your S3 region
-            'credentials' => [
-                'key'    => $awsAccessKeyId,
-                'secret' => $awsSecretAccessKey,
-            ],
-        ]);
-
-        $cmd = $s3Client->getCommand('GetObject', [
-            'Bucket' => 'gallery-bazunia', // Replace with your bucket name
-            'Key'    => '3b05775e6ba91e1b922033de05b468b1.jpg'
-        ]);
-
-        $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
-
-        $presignedUrl = (string) $request->getUri();
-
-        return $this->json(['url' => $presignedUrl]);
-    }
-
-    /**
-     * @Route("/images", methods={"GET"})
-     */
-    public function getImages(ImageRepository $imageRepository): Response
+    public function fetchImages(ImageRepository $imageRepository)
     {
         $images = $imageRepository->findAll();
 
@@ -81,9 +41,67 @@ class ImageController extends AbstractController
             ];
         }, $images);
 
+        return $imageData;
+    }
+
+    /**
+     * @Route("/images", methods={"GET"})
+     */
+    public function getImages(ImageRepository $imageRepository): Response
+    {
+        $imageData = $this->fetchImages($imageRepository);
+
         // Return the data as a JSON response
         return new Response(json_encode($imageData), Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
+
+    /**
+     * @Route("/signed-url/{key}", name="signed_url")
+     */
+    public function signedUrl(string $key, ImageRepository $imageRepository)
+    {
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__.'/../../.env');
+
+        $awsAccessKeyId = $_ENV['AWS_ACCESS_KEY_ID'];
+        $awsSecretAccessKey = $_ENV['AWS_SECRET_ACCESS_KEY'];
+
+        $imageData = $this->fetchImages($imageRepository);
+
+//        dump($awsAccessKeyId, $awsSecretAccessKey);
+//        dd($awsAccessKeyId);
+//        var_dump($key);
+
+        $s3Client = new S3Client([
+            'version' => 'latest',
+            'region'  => 'eu-west-1', // Replace with your S3 region
+            'credentials' => [
+                'key'    => $awsAccessKeyId,
+                'secret' => $awsSecretAccessKey,
+            ],
+        ]);
+        $firstImageTitle = '';
+        foreach ($imageData as $image) {
+            if ($image['id'] == $key) {
+                $firstImageTitle = $image['title'];
+                break;
+            }
+        }
+
+
+        $cmd = $s3Client->getCommand('GetObject', [
+            'Bucket' => 'gallery-bazunia', // Replace with your bucket name
+            'Key'    => $firstImageTitle
+
+        ]);
+
+        $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
+
+        $presignedUrl = (string) $request->getUri();
+
+        return $this->json(['url' => $presignedUrl]);
+    }
+
 
 
     /**
@@ -121,7 +139,7 @@ class ImageController extends AbstractController
 
             $image->setUrl('https://gallery-bazunia.s3.eu-west-1.amazonaws.com/' . $newFilename);
             $image->setTitle($newFilename);
-            $image->setDescription('Default description');
+            $image->setDescription('');
             $image->setFilename($originalFilename); // Set the original filename
 
             $this->em->persist($image);

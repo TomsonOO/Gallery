@@ -10,7 +10,7 @@ const apiClient = axios.create({
 
 export default {
     getSignedUrl(key) {
-        return apiClient.get(`/signed-url/${key}`) // Replace with your signed URL endpoint
+        return apiClient.get(`/signed-url/${key}`) // Include filename in the endpoint
     },
     getImages() {
         return apiClient.get('/images') // Replace with your images endpoint
