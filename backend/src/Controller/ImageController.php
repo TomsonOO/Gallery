@@ -31,8 +31,21 @@ class ImageController extends AbstractController
     {
         $images = $imageRepository->findAll();
 
-        // TODO: Return images as JSON
+        // Transform the array of images into an array of image arrays
+        $imageData = array_map(function (Image $image) {
+            return [
+                'id' => $image->getId(),
+                'url' => $image->getUrl(),
+                'title' => $image->getTitle(),
+                'description' => $image->getDescription(),
+                'filename' => $image->getFilename(),
+            ];
+        }, $images);
+
+        // Return the data as a JSON response
+        return new Response(json_encode($imageData), Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
+
 
     /**
      * @Route("/images/{id}", methods={"GET"})

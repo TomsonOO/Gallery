@@ -2,7 +2,7 @@
   <div class="image-grid">
     <div v-for="image in images" :key="image.id" class="image-item">
       <img :src="image.url" :alt="image.title">
-      <h2>{{ image.title }}</h2>
+      <h2>Hello There!</h2>
       <p>{{ image.description }}</p>
     </div>
   </div>
