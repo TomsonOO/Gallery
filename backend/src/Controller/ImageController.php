@@ -12,16 +12,55 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
+use Symfony\Component\Dotenv\Dotenv;
 
 class ImageController extends AbstractController
 {
     private $s3;
     private $em;
 
+
     public function __construct(S3Client $s3, EntityManagerInterface $em)
     {
         $this->s3 = $s3;
         $this->em = $em;
+    }
+
+
+    /**
+     * @Route("/signed-url/{key}", name="signed_url")
+     */
+    public function signedUrl(string $key)
+    {
+        $dotenv = new Dotenv();
+        $dotenv->load(__DIR__.'/../../.env');
+
+        $awsAccessKeyId = $_ENV['AWS_ACCESS_KEY_ID'];
+        $awsSecretAccessKey = $_ENV['AWS_SECRET_ACCESS_KEY'];
+
+//        dump($awsAccessKeyId, $awsSecretAccessKey);
+//        dd($awsAccessKeyId);
+//        var_dump($key);
+
+        $s3Client = new S3Client([
+            'version' => 'latest',
+            'region'  => 'eu-west-1', // Replace with your S3 region
+            'credentials' => [
+                'key'    => $awsAccessKeyId,
+                'secret' => $awsSecretAccessKey,
+            ],
+        ]);
+
+        $cmd = $s3Client->getCommand('GetObject', [
+            'Bucket' => 'gallery-bazunia', // Replace with your bucket name
+            'Key'    => '3b05775e6ba91e1b922033de05b468b1.jpg'
+        ]);
+
+        $request = $s3Client->createPresignedRequest($cmd, '+20 minutes');
+
+        $presignedUrl = (string) $request->getUri();
+
+        return $this->json(['url' => $presignedUrl]);
     }
 
     /**

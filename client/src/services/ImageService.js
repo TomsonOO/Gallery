@@ -9,7 +9,25 @@ const apiClient = axios.create({
 });
 
 export default {
+    getSignedUrl(key) {
+        return apiClient.get(`/signed-url/${key}`) // Replace with your signed URL endpoint
+    },
     getImages() {
-        return apiClient.get('/images')
+        return apiClient.get('/images') // Replace with your images endpoint
+    },
+    uploadImage(image) {
+        let formData = new FormData();
+        formData.append('image', image);
+        return apiClient.post('/images', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }) // Replace with your image upload endpoint
+    },
+    login(credentials) {
+        return apiClient.post('/login', credentials) // Replace with your login endpoint
+    },
+    register(user) {
+        return apiClient.post('/register', user) // Replace with your registration endpoint
     }
 }

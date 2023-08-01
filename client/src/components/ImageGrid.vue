@@ -22,11 +22,28 @@ export default {
   created() {
     ImageService.getImages()
         .then(response => {
-          this.images = response.data
+          this.images = response.data.map(image => {
+            // Check that the image has a filename property
+            if (!image.id) {
+              console.error('Image does not have a filename property:', image)
+            } else {
+              // Get the signed URL for each image
+              ImageService.getSignedUrl(image.title)
+                  .then(response => {
+                    // Replace the image URL with the signed URL
+                    image.url = response.data.url
+                  })
+                  .catch(error => {
+                    console.error(error)
+                  })
+            }
+            return image
+          })
         })
         .catch(error => {
           console.error(error)
         })
+
   }
 }
 
